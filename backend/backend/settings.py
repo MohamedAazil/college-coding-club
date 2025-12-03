@@ -88,6 +88,15 @@ DATABASES = {
     }
 }
 
+SUPABASE_JWT_SECRET = os.getenv("SUPABASE_JWT_SECRET")
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'core.authentication.SupabaseAuth',
+    ]
+}
+
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
