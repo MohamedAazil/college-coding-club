@@ -1,7 +1,3 @@
-Here is a clean, production-ready **README.md** for your project **College Coding Club**.
-
----
-
 # 🚀 College Coding Club
 
 A collaborative coding platform for college students featuring **Supabase authentication**, **community blogs**, **competitive coding stats**, **real-time features**, and an **online code editor**.
