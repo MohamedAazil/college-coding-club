@@ -1,10 +1,32 @@
 from django.db import models
-from django.contrib.postgres.indexes import Gin
+from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
 # Create your models here.
 
-class CommunityPosts(models.Model):
+class College(models.Model):
+    college_name = models.TextField()
+    address = models.CharField(max_length=50, blank=True, null=True)
+    
+
+class UserProfile(models.Model):
+    user_id = models.CharField(max_length=255, unique=True)
+    name = models.TextField(null=False)
+    age = models.IntegerField(null=True, blank=True) 
+    college = models.ForeignKey(College, on_delete=models.SET_NULL, null=True, blank=True)
+    year = models.IntegerField()
+    
+class SocialLink(models.Model):
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    platform = models.CharField(max_length=255)
+    url = models.URLField()
+    shared = models.BooleanField(default=True)
+    
+    def __str__(self):
+        return f"{self.platform}: {self.user.name}"
+
+class CommunityPost(models.Model):
     title = models.CharField(max_length=200)
     content = models.TextField()
     author_id = models.IntegerField()
@@ -16,15 +38,15 @@ class CommunityPosts(models.Model):
     
     class Meta:
         indexes = [
-            Gin(fields=['search_vector'])
+            GinIndex(fields=['search_vector'])
         ]
 
     def __str__(self):
         return self.title
     
-class Comments(models.Model):
+class Comment(models.Model):
     comment_id = models.AutoField(primary_key=True)
-    post = models.ForeignKey(CommunityPosts, on_delete=models.CASCADE)
+    post = models.ForeignKey(CommunityPost, on_delete=models.CASCADE)
     author_id = models.IntegerField()
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -53,9 +75,9 @@ class Like(models.Model):
     user_id = models.IntegerField()
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.IntegerField()
-    content_object = models.GenericForeignKey('content_type', 'object_id')
+    content_object = GenericForeignKey('content_type', 'object_id')
     creared_at = models.DateTimeField(auto_now_add=True)
     reaction_type = models.CharField(max_length=7, choices=REACTION_CHOICES)
     
     class Meta: 
-        unique_togther = ('user_id', 'content_type', 'object_id')
+        unique_together = ('user_id', 'content_type', 'object_id')
