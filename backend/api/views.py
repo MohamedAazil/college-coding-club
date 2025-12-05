@@ -3,14 +3,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from core.supabase_client import supabase
-
-
-# backend/api/views.py
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework import status
 from core.supabase_client import supabase
-
 class LoginUserView(APIView):
     def post(self, request):
         email = request.data.get("email")
