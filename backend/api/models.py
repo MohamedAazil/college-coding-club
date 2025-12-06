@@ -11,7 +11,7 @@ class College(models.Model):
     
 
 class UserProfile(models.Model):
-    user_id = models.CharField(max_length=255, unique=True)
+    user_id = models.CharField(max_length=255, unique=True) #supabase user id
     name = models.TextField(null=False)
     age = models.IntegerField(null=True, blank=True) 
     college = models.ForeignKey(College, on_delete=models.SET_NULL, null=True, blank=True)
@@ -29,7 +29,7 @@ class SocialLink(models.Model):
 class CommunityPost(models.Model):
     title = models.CharField(max_length=200)
     content = models.TextField()
-    author_id = models.IntegerField()
+    author = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     search_vector = SearchVectorField(null=True)
     like_count = models.IntegerField(default=0)
