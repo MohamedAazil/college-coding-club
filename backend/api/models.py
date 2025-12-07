@@ -8,17 +8,16 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 class College(models.Model):
     college_name = models.TextField()
     address = models.CharField(max_length=50, blank=True, null=True)
-    
 
 class UserProfile(models.Model):
     user_id = models.CharField(max_length=255, unique=True) #supabase user id
     name = models.TextField(null=False)
     age = models.IntegerField(null=True, blank=True) 
-    college = models.ForeignKey(College, on_delete=models.SET_NULL, null=True, blank=True)
+    college = models.ForeignKey(College, on_delete=models.SET_NULL, null=True, blank=True, related_name="users")
     year = models.IntegerField()
     
 class SocialLink(models.Model):
-    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="social_links")
     platform = models.CharField(max_length=255)
     url = models.URLField()
     shared = models.BooleanField(default=True)
@@ -29,7 +28,7 @@ class SocialLink(models.Model):
 class CommunityPost(models.Model):
     title = models.CharField(max_length=200)
     content = models.TextField()
-    author = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True, blank=True)
+    author = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True, blank=True, related_name="posts")
     created_at = models.DateTimeField(auto_now_add=True)
     search_vector = SearchVectorField(null=True)
     like_count = models.IntegerField(default=0)
