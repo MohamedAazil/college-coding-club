@@ -43,6 +43,13 @@ class CommunityPost(models.Model):
     def __str__(self):
         return self.title
     
+class PostMedia(models.Model):
+    file_type_choices = [('image', 'Image'),('video','Video'), ('pdf','PDF')]
+    post = models.ForeignKey(CommunityPost, on_delete=models.CASCADE, related_name="media")
+    file_url = models.URLField()
+    file_type = models.CharField(choices=file_type_choices)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    
 class Comment(models.Model):
     comment_id = models.AutoField(primary_key=True)
     post = models.ForeignKey(CommunityPost, on_delete=models.CASCADE)
@@ -53,6 +60,7 @@ class Comment(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     is_updated = models.BooleanField(default=False)
     status = models.CharField(max_length=20, default='active')  # e.g., active, deleted, edited
+    gold_coins = models.BigIntegerField(default=0)
 
     class Meta:
         indexes = [
