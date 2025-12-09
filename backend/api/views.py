@@ -5,10 +5,13 @@ from rest_framework.permissions import IsAuthenticated
 from core.supabase_client import supabase
 from rest_framework import status
 from core.supabase_client import supabase
-from .models import CommunityPost, UserProfile, SocialLink, Like, College
+from .models import CommunityPost, UserProfile, SocialLink, Like, College, PostMedia
 from .serializers import CommunityPostSerializer
+from backend.settings import POSTS_MEDIA_BUCKET_NAME
+from core.utils import upload_post_file_to_supabase, file_type
 
 class CommunityPostView(APIView):
+    permission_classes = [IsAuthenticated]
     def get_single_post(self, user_id, post_id):
         try:
             post_queryset = CommunityPost.objects.filter(id=post_id)
@@ -46,13 +49,43 @@ class CommunityPostView(APIView):
         author = authorqs.first()
         title = request.data.get('title')
         content = request.data.get('content')
-        newpost = CommunityPost.objects.create(
-            title = title,
-            content = content,
-            author = author,
-            is_anonymous = request.data.get("is_anonymous", False)
-        )
-        return Response({"message": "Post created"}, status=status.HTTP_201_CREATED)
+        try: 
+            newpost = CommunityPost.objects.create(
+                title = title,
+                content = content,
+                author = author,
+                is_anonymous = request.data.get("is_anonymous", False)
+            )
+            files = request.data.get('media', [])
+            if len(files) > 0:
+                file_objs = []
+                path = f"post/{newpost.id}/"
+                for file in files:
+                    file_type = file_type(file.get('filename'))
+                    if file_type.lower() == 'unknown':
+                        continue
+                    curr_path = path + str(file.get('filename'))
+                    url = upload_post_file_to_supabase(file=file, filename_with_path=curr_path)
+                    file_dict = {
+                        'post': newpost,
+                        'file_url': url,
+                        'file_type': file_type
+                    }
+                    file_objs.append(file_dict)
+
+                post_media_objs = [
+                    PostMedia(
+                        post=file_obj.get('post'),
+                        file_url=file_obj.get('file_url'),
+                        file_type=file_obj.get('file_type')
+                    )
+                    for file_obj in file_objs
+                ]
+                bulk_creat_res = PostMedia.objects.bulk_create(post_media_objs)
+
+            return Response({"message": "Post created"}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({"error":e.info}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class LoginUserView(APIView):
     def post(self, request):
