@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from corsheaders.defaults import default_headers
 
 load_dotenv()
 
@@ -29,7 +30,7 @@ SECRET_KEY = 'django-insecure-_$dw=9$q%2#pe26zjf$oqlpk!en+by)oeji*jmvtstud2vg^-_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False") == "True"
 POSTS_MEDIA_BUCKET_NAME = os.getenv('POSTS_MEDIA_BUCKET_NAME')
-ALLOWED_HOSTS = ["localhost:5173"]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -43,9 +44,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api',
     'rest_framework',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -55,6 +58,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",  # Frontend server
+]
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    "Authorization",
+]
 ROOT_URLCONF = 'backend.urls'
 
 TEMPLATES = [
