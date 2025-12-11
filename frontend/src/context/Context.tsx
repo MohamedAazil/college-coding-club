@@ -1,6 +1,7 @@
 import { supabase } from "@/lib/supabaseClient";
 import type { Session, User } from "@supabase/supabase-js";
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
 interface AppContextType {
     user: User | null
     session: Session | null
@@ -16,9 +17,12 @@ interface AppContextProviderProps  {
 
 export const AppContext = createContext<AppContextType|undefined>(undefined);
 export const AppContextProvider = ({children}: AppContextProviderProps) => {
+
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
   
   const [user, setUser] = useState<User|null>(null)
   const [session, setSession] = useState<Session|null>(null)
+  const navigate = useNavigate()
 
   const configureSessionUserData = (currentSession:Session | null) => {
       setSession(currentSession)
@@ -39,14 +43,21 @@ export const AppContextProvider = ({children}: AppContextProviderProps) => {
   }, [])
 
   const login = async (email: string, password:string) => {
-    const {data, error} = await supabase.auth.signInWithPassword({email, password})
-    if(error) throw error
-    configureSessionUserData(data.session)
+    // const {data, error} = await supabase.auth.signInWithPassword({email, password})
+    supabase.auth.signInWithPassword({email, password})
+    .then((resp) => console.log(resp))
+    // if(error) throw error
+    // configureSessionUserData(data.session)
+    navigate("/")
   }
 
   const logout = async () => {
     await supabase.auth.signOut()
     configureSessionUserData(null)
+  }
+
+  const getUserDetails = async () => {
+    const response = fetch(`${BACKEND_URL}/`)
   }
     // const navigate = useNavigate()
 

@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-_$dw=9$q%2#pe26zjf$oqlpk!en+by)oeji*jmvtstud2vg^-_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False") == "True"
 POSTS_MEDIA_BUCKET_NAME = os.getenv('POSTS_MEDIA_BUCKET_NAME')
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["http://localhost:5173"]
 
 
 # Application definition

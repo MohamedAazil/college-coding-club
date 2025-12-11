@@ -5,9 +5,9 @@ import { AppContextProvider } from './context/Context.tsx'
 import './index.css'
 
 createRoot(document.getElementById('root')!).render(
-  <AppContextProvider>
-    <BrowserRouter>
+  <BrowserRouter>
+    <AppContextProvider>
         <App />
-    </BrowserRouter>
-  </AppContextProvider>
+    </AppContextProvider>
+  </BrowserRouter>
 )
