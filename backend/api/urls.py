@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import SignupUserView, LoginUserView, CommunityPostView
+from .views import CommunityPostView
 
 urlpatterns = [
     path('post', CommunityPostView.as_view(), name='post'),

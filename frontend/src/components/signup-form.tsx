@@ -20,7 +20,7 @@ interface LoginProps extends React.ComponentProps<typeof Card> {
 export function SignupForm({redirectUrl, ...props }: LoginProps) {
 
   return (
-    <Card {...props}>
+    <Card {...props} className="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm w-100 mx-auto mt-11">
       <CardHeader>
         <CardTitle>Create an account</CardTitle>
         <CardDescription>
