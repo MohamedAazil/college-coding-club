@@ -30,8 +30,8 @@ SECRET_KEY = 'django-insecure-_$dw=9$q%2#pe26zjf$oqlpk!en+by)oeji*jmvtstud2vg^-_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False") == "True"
 POSTS_MEDIA_BUCKET_NAME = os.getenv('POSTS_MEDIA_BUCKET_NAME')
-ALLOWED_HOSTS = ["http://localhost:5173"]
-
+ALLOWED_HOSTS = ["*"]
+SUPABASE_URL = os.environ.get('SUPABASE_URL')
 
 # Application definition
 
@@ -48,6 +48,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    # 'backend.core.authentication.PrintRequestMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
