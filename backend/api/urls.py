@@ -1,6 +1,7 @@
 from django.urls import path
-from .views import CommunityPostView
+from .views import CommunityPostView, UserProfileDataView
 
 urlpatterns = [
-    path('post', CommunityPostView.as_view(), name='post'),
+    path('community-posts', CommunityPostView.as_view(), name='community-posts'),
+    path('user-profile', UserProfileDataView.as_view(), name='get-user-profile')    
 ]

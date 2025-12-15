@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
@@ -15,6 +16,7 @@ class UserProfile(models.Model):
     age = models.IntegerField(null=True, blank=True) 
     college = models.ForeignKey(College, on_delete=models.SET_NULL, null=True, blank=True, related_name="users")
     year = models.IntegerField()
+    profile_img_url = models.URLField(null=True, blank=True, default=None)
     
 class SocialLink(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="social_links")
@@ -26,14 +28,18 @@ class SocialLink(models.Model):
         return f"{self.platform}: {self.user.name}"
 
 class CommunityPost(models.Model):
+    post_id = models.UUIDField(default=uuid.uuid4, unique=True)   
     title = models.CharField(max_length=200)
     content = models.TextField()
+    content_json = models.JSONField()
+    coverImg = models.URLField()
     author = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True, blank=True, related_name="posts")
     created_at = models.DateTimeField(auto_now_add=True)
     search_vector = SearchVectorField(null=True)
     like_count = models.IntegerField(default=0)
     dislike_count = models.IntegerField(default=0)
     is_anonymous = models.BooleanField(default=False)
+    is_flagged = models.BooleanField(default=False)
     
     class Meta:
         indexes = [
@@ -42,6 +48,10 @@ class CommunityPost(models.Model):
 
     def __str__(self):
         return self.title
+    
+class CommunityPostQueueEntry(models.Model):
+    post_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
+    flagged = models.BooleanField()
     
 class PostMedia(models.Model):
     file_type_choices = [('image', 'Image'),('video','Video'), ('pdf','PDF')]

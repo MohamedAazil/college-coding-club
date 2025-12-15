@@ -1,5 +1,10 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
 import type { Blog } from "@/types";
 import { format } from "date-fns";
 interface Props {
@@ -8,13 +13,13 @@ interface Props {
 
 export default function BlogCard({ blog }: Props) {
   return (
-    <Card className="hover:shadow-lg transition-all cursor-pointer rounded-2xl overflow-hidden">
-      {blog.coverImage && (
-        <div className="h-48 w-full overflow-hidden">
+    <Card className="hover:shadow-lg transition-all cursor-pointer rounded-2xl overflow-hidden blogCard">
+      {blog.coverImg && (
+        <div className="h-48 w-full overflow-hidden px-6 blogCard">
           <img
-            src={blog.coverImage}
+            src={blog.coverImg}
             alt={blog.title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover rounded-xl"
           />
         </div>
       )}
@@ -24,18 +29,20 @@ export default function BlogCard({ blog }: Props) {
       </CardHeader>
 
       <CardContent>
-        <p className="text-sm text-muted-foreground line-clamp-3">{blog.excerpt}</p>
+        <p className="text-sm text-muted-foreground line-clamp-3">
+          {blog.content.slice(0, 20)}...
+        </p>
       </CardContent>
 
       <CardFooter className="flex items-center gap-2">
         <Avatar className="h-8 w-8">
-          <AvatarImage src={blog.author.avatar} />
-          <AvatarFallback>{blog.author.name[0]}</AvatarFallback>
+          <AvatarImage src={blog.author_avatar} />
+          <AvatarFallback>{blog.author_name[0]}</AvatarFallback>
         </Avatar>
         <div>
-          <p className="text-sm font-medium">{blog.author.name}</p>
+          <p className="text-sm font-medium">{blog.author_name}</p>
           <p className="text-xs text-muted-foreground">
-            {format(new Date(blog.publishedAt), "PPP")}
+            {format(new Date(blog.created_at), "PPP")}
           </p>
         </div>
       </CardFooter>

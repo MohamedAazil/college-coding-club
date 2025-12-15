@@ -2,7 +2,7 @@ import jwt
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 from django.conf import settings
-from backend.settings import SUPABASE_JWT_SECRET
+
 
 class SupabaseAuth(BaseAuthentication):
     def authenticate(self, request):
@@ -20,12 +20,15 @@ class SupabaseAuth(BaseAuthentication):
             # Decode JWT with your Supabase JWT secret
             payload = jwt.decode(
                 token,
-                SUPABASE_JWT_SECRET,
+                settings.SUPABASE_JWT_SECRET,
                 algorithms=["HS256"],
+                options={"verify_aud": False}
             )
         except jwt.ExpiredSignatureError:
             raise AuthenticationFailed("Token expired")
         except jwt.InvalidTokenError:
             raise AuthenticationFailed("Invalid token")
+        except Exception as e:
+            raise Exception(str(e))
 
         return (payload, None)
