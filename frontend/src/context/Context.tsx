@@ -16,9 +16,10 @@ interface AppContextType {
   setSession: (session: Session | null) => void;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  getUserDetails: () => Promise<void>;
+  getUserDetails: (session: Session) => Promise<void>;
   signup: (email: string, password: string) => Promise<void>;
   BACKEND_URL: string;
+  userProfile: UserProfile | null;
 }
 
 interface AppContextProviderProps {
@@ -40,12 +41,26 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
   };
 
   useEffect(() => {
+    let isInitialized = false;
+    const handleSession = async (session: Session | null) => {
+      debugger;
+      if (!session) {
+        navigate("/login");
+        return;
+      }
+      configureSessionUserData(session);
+      if (!isInitialized) {
+        isInitialized = true;
+        await getUserDetails(session);
+      }
+    };
+
     supabase.auth.getSession().then(({ data }) => {
-      configureSessionUserData(data.session);
+      handleSession(data?.session);
     });
     const { data: listener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
-        configureSessionUserData(session);
+        handleSession(session);
       }
     );
 
@@ -74,39 +89,32 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
     configureSessionUserData(null);
   };
 
-  const getUserDetails = async () => {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-    const token = session?.access_token;
-    configureSessionUserData(session);
-    // const res = fetch(`${import.meta.env.VITE_BACKEND_URL}/api/user-profile`, {
-    //   method: "GET",
-    //   headers: {
-    //     Authorization: `Bearer ${token}`,
-    //     "Content-Type": "application/json"
-    //   }
-    // });
-    if (!(session && user && token)) {
+  const getUserDetails = async (session: any) => {
+    if (!session) {
       navigate("/login");
       return;
     }
+
+    const token = session.access_token;
+
+    configureSessionUserData(session);
+
     try {
       const httpResponse = await fetch(`${BACKEND_URL}/api/user-profile`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token ?? ""}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          userId: user?.id,
+          userId: session.user.id,
         }),
       });
 
       if (!httpResponse.ok) throw new Error("Something went wrong");
 
-      const responseData = httpResponse.json();
-      console.log(responseData);
+      const responseData = await httpResponse.json();
+      setUserProfile(responseData);
     } catch (error) {
       console.error("Failed to fetch user details:", error);
     }
@@ -125,6 +133,7 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
         getUserDetails,
         signup,
         BACKEND_URL,
+        userProfile,
       }}
     >
       {children}
