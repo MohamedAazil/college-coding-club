@@ -36,8 +36,8 @@ class CommunityPost(models.Model):
     author = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True, blank=True, related_name="posts")
     created_at = models.DateTimeField(auto_now_add=True)
     search_vector = SearchVectorField(null=True)
-    like_count = models.IntegerField(default=0)
-    dislike_count = models.IntegerField(default=0)
+    like_count = models.PositiveIntegerField(default=0)
+    dislike_count = models.PositiveIntegerField(default=0)
     is_anonymous = models.BooleanField(default=False)
     is_flagged = models.BooleanField(default=False)
     
@@ -89,7 +89,7 @@ class Like(models.Model):
         (Dislike, 'Dislike'),
     ]
     
-    user_id = models.IntegerField()
+    user_id = models.TextField()
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.IntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')

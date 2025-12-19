@@ -9,6 +9,7 @@ from .models import CommunityPost, UserProfile, SocialLink, Like, College, PostM
 from .serializers import CommunityPostSerializer, UserProfileSerializer
 from backend.settings import POSTS_MEDIA_BUCKET_NAME
 from core.utils import upload_post_file_to_supabase, get_file_type, extract_text_from_json
+from django.contrib.contenttypes.models import ContentType
 
 class UserProfileDataView(APIView):
     def post(self, request, *args, **kwargs):
@@ -22,17 +23,17 @@ class UserProfileDataView(APIView):
                 
             return Response({"data": serializer.data}, status=status.HTTP_200_OK)
         except Exception as e: 
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class CommunityPostView(APIView):
     # permission_classes = [IsAuthenticated]
-    def get_single_post(self, user_id, post_id):
+    def get_single_post(self, request, user_id, post_id):
         try:
             post_queryset = CommunityPost.objects.filter(id=post_id)
             if not post_queryset.exists():
                 return Response({"message":"No data found"}, status=status.HTTP_404_NOT_FOUND)
             post = post_queryset.first()
-            serializer = CommunityPostSerializer(post)
+            serializer = CommunityPostSerializer(post, context={'request':request})
             return Response({"data":serializer.data}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error":e.info}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -47,7 +48,7 @@ class CommunityPostView(APIView):
         pagination = kwargs.get("post_count", 25)
         single_post = False
         if post_id:
-            return self.get_single_post(post_id=post_id)
+            return self.get_single_post(post_id=post_id, request=request)
         try: 
             postquerySet = CommunityPost.objects.order_by("like_count", "created_at")
             if college_id:
@@ -57,7 +58,7 @@ class CommunityPostView(APIView):
                 author = UserProfile.objects.filter(user_id=author_id).first()
                 postquerySet.filter(author=author)
             posts = postquerySet[:25]
-            serializer = CommunityPostSerializer(posts, many=True)
+            serializer = CommunityPostSerializer(posts, many=True, context={'request':request})
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
@@ -114,3 +115,33 @@ class CommunityPostView(APIView):
             return Response({"message": "Post created"}, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+class PostReactionView(APIView):
+    def post(self, request, *args, **kwargs):
+        try: 
+            post_id = request.data.get('post_id')
+            community_post_obj = CommunityPost.objects.filter(post_id=post_id).first()
+            if not community_post_obj: return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
+            reaction_type = request.data.get('reaction')
+            content_type = ContentType.objects.get_for_model(CommunityPost)
+            reaction_record, created = Like.objects.update_or_create(
+                user_id = request.user.get('sub'),
+                object_id = community_post_obj.id,
+                content_type=content_type,
+                defaults={
+                "reaction_type": reaction_type}
+            )
+            if reaction_type == Like.Like:
+                community_post_obj.like_count += 1
+                if not created: 
+                    community_post_obj.dislike_count -= 1 
+            elif reaction_type == Like.Dislike:
+                community_post_obj.dislike_count += 1
+                if not created: 
+                    community_post_obj.like_count -= 1 
+            community_post_obj.save()
+            
+            return Response({"message": f"Reaction {reaction_type} saved"})
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        

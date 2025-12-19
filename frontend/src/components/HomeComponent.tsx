@@ -41,7 +41,7 @@ const HomeComponent = () => {
             {/* CENTER: Search bar (flex-grow pushes it to center) */}
             <div className="flex-1 flex justify-center">
               <div className="w-full max-w-md">
-                <Input placeholder="Search posts…" className="w-full" />
+                <Input placeholder="Search…" className="w-full" />
               </div>
             </div>
 
