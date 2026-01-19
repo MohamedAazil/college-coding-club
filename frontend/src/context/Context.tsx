@@ -43,7 +43,6 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
   useEffect(() => {
     let isInitialized = false;
     const handleSession = async (session: Session | null) => {
-      debugger;
       if (!session) {
         navigate("/login");
         return;
