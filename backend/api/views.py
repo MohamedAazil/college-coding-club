@@ -11,6 +11,7 @@ from .serializers import CommunityPostSerializer, UserProfileSerializer
 from backend.settings import POSTS_MEDIA_BUCKET_NAME
 from core.utils import upload_post_file_to_supabase, get_file_type, extract_text_from_json
 from django.contrib.contenttypes.models import ContentType
+from .tasks import moderate_community_post
 
 class UserProfileDataView(APIView):
     parser_classes = [FormParser, MultiPartParser]
@@ -79,6 +80,7 @@ class CommunityPostView(APIView):
             if author_id: 
                 author = UserProfile.objects.filter(user_id=author_id).first()
                 postquerySet.filter(author=author)
+            postquerySet = postquerySet.filter(pendingModeration=False, is_flagged=False)
             posts = postquerySet[:25]
             serializer = CommunityPostSerializer(posts, many=True, context={'request':request})
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -110,6 +112,7 @@ class CommunityPostView(APIView):
                 author = author,
                 is_anonymous = request.data.get("is_anonymous", False)
             )
+            moderate_community_post.delay(newpost.post_id)
             files = request.data.get('media', [])
             if len(files) > 0:
                 file_objs = []

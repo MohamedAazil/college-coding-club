@@ -8,6 +8,8 @@ from core.utils import extract_text_from_json
 
 @receiver(post_save, sender=CommunityPost)
 def update_search_vector(sender, instance, *args, **kwargs):
+    if instance.pendingModeration or instance.is_flagged: 
+        return 
     content = instance.content
     
     CommunityPost.objects.filter(id=instance.id).update(

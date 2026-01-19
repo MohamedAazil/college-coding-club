@@ -48,7 +48,8 @@ class CommunityPost(models.Model):
     like_count = models.PositiveIntegerField(default=0)
     dislike_count = models.PositiveIntegerField(default=0)
     is_anonymous = models.BooleanField(default=False)
-    is_flagged = models.BooleanField(default=False)
+    is_flagged = models.BooleanField(default=True)
+    pendingModeration = models.BooleanField(default=True) 
     
     class Meta:
         indexes = [

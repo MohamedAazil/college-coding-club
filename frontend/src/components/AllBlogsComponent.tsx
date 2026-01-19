@@ -14,7 +14,6 @@ const AllBlogsComponent = () => {
           Authorization: `Bearer ${session?.access_token}`,
         },
       });
-      debugger;
       if (!response.ok) throw new Error("Something went wrong");
       const data = await response.json();
       setBlogs(data);
