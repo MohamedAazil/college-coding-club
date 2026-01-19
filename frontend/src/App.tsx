@@ -4,6 +4,7 @@ import CreateBlogComponent from "./components/CreateBlogComponent";
 import HomeComponent from "./components/HomeComponent";
 import { LoginForm } from "./components/login-form";
 import { SignupForm } from "./components/signup-form";
+import UserProfileComponent from "./components/UserProfileComponent";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route path="blogs" element={<AllBlogsComponent />} />
           <Route path="blogs/my-blogs" element={<AllBlogsComponent />} />
           <Route path="blogs/new" element={<CreateBlogComponent />} />
+          <Route path="settings/user" element={<UserProfileComponent />} />
           {/* <Route index element={<BlogList/>}/> */}
         </Route>
       </Routes>

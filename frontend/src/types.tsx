@@ -16,13 +16,15 @@ export interface Blog {
 }
 
 export interface UserProfile {
-  id: number;
-  user_id: string;
   name: string;
-  age: number;
+  age: number | null;
   college: string;
-  year: number;
-  userImgUrl: string;
+  year: number | null;
+  profileImgFile: string;
+  goal: string;
+  shareProfile: boolean;
+  currentSkills: [];
+  learningSkills: [];
 }
 
 export interface BlogEditorProps {

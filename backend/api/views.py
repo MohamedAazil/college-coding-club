@@ -1,7 +1,8 @@
+import json
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.parsers import FormParser, MultiPartParser
 from core.supabase_client import supabase
 from rest_framework import status
 from core.supabase_client import supabase
@@ -12,6 +13,8 @@ from core.utils import upload_post_file_to_supabase, get_file_type, extract_text
 from django.contrib.contenttypes.models import ContentType
 
 class UserProfileDataView(APIView):
+    parser_classes = [FormParser, MultiPartParser]
+    
     def post(self, request, *args, **kwargs):
         try: 
             supabase_user_id = request.data.get("userId")
@@ -24,9 +27,28 @@ class UserProfileDataView(APIView):
             return Response({"data": serializer.data}, status=status.HTTP_200_OK)
         except Exception as e: 
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    def put(self, request, *args, **kwargs):
+        try:
+            defaults_dict = {
+                'name': request.data.get('name'),
+                'age': request.data.get('age'),
+                'college': request.data.get('college'),
+                'year': request.data.get('year'),
+                'profile_img_url': request.data.get('profile_img_url'),
+                'goal': request.data.get('goal'),
+                'share_profile': request.data.get('shareProfile'),
+                'currentSkills': json.loads(request.data.get('currentSkills')),
+                'learningSkills': json.loads(request.data.get('learningSkills'))
+            }
+            UserProfile.objects.update_or_create(
+                user_id=request.user['sub'],
+                defaults=defaults_dict
+            )
+            print(defaults_dict)
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class CommunityPostView(APIView):
-    # permission_classes = [IsAuthenticated]
     def get_single_post(self, request, user_id, post_id):
         try:
             post_queryset = CommunityPost.objects.filter(id=post_id)
@@ -145,3 +167,6 @@ class PostReactionView(APIView):
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
+# class CollegeListView(APIView):
+#     def get(self, request, *args, **kwargs):
+#         colleges = College.objects.all().order_by_name("")

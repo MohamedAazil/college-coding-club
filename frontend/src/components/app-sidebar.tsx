@@ -1,6 +1,6 @@
-import { GalleryVerticalEnd } from "lucide-react";
 import * as React from "react";
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Sidebar,
   SidebarContent,
@@ -13,24 +13,11 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
+import { useAppContext } from "@/context/Context";
 
 // This is sample data.
 const data = {
   navMain: [
-    {
-      title: "Blogs",
-      url: "/blogs",
-      items: [
-        {
-          title: "My Blogs",
-          url: "/blogs/my-blogs",
-        },
-        {
-          title: "New Blog",
-          url: "/blogs/new",
-        },
-      ],
-    },
     {
       title: "Building Your Application",
       url: "#",
@@ -83,6 +70,20 @@ const data = {
         {
           title: "Examples",
           url: "#",
+        },
+      ],
+    },
+    {
+      title: "Blogs",
+      url: "/blogs",
+      items: [
+        {
+          title: "My Blogs",
+          url: "/blogs/my-blogs",
+        },
+        {
+          title: "New Blog",
+          url: "/blogs/new",
         },
       ],
     },
@@ -156,19 +157,24 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { userProfile } = useAppContext();
   return (
     <Sidebar variant="floating" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="#">
-                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+              <a href="/settings/user">
+                {/* <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg"> */}
+                {/* <div className="flex aspect-square size-8 items-center justify-center rounded-lg">
                   <GalleryVerticalEnd className="size-4" />
-                </div>
+                </div> */}
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={userProfile?.userImgUrl} />
+                  <AvatarFallback>{userProfile?.name?.[0]}</AvatarFallback>
+                </Avatar>
                 <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-medium">Documentation</span>
-                  <span className="">v1.0.0</span>
+                  <span className="font-medium">{userProfile?.name}</span>
                 </div>
               </a>
             </SidebarMenuButton>

@@ -9,9 +9,9 @@ export async function blobUrlToFile(
   return new File([blob], filename, { type: blob.type });
 }
 
-export async function uploadImageToSupabase(file:File, folder = 'posts') {
+export async function uploadImageToSupabase(file:File, folder = 'posts', filename='') {
   const postsBucketName = import.meta.env.VITE_POSTS_MEDIA_BUCKET_NAME
-  const filepath = `${folder}/${crypto.randomUUID()}-${file.name}`
+  const filepath = `${folder}/${crypto.randomUUID()}-${filename.length > 0? filename:file.name}`
 
   const {data, error} = await supabase.storage.from(postsBucketName).upload(filepath, file, {upsert: false});
 
