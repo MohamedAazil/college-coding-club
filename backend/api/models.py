@@ -10,6 +10,7 @@ class College(models.Model):
     college_name = models.TextField()
     address = models.CharField(max_length=50, blank=True, null=True)
 
+
 class UserProfile(models.Model):
     user_id = models.CharField(max_length=255, unique=True) #supabase user id
     name = models.TextField(null=False)
@@ -17,6 +18,14 @@ class UserProfile(models.Model):
     college = models.ForeignKey(College, on_delete=models.SET_NULL, null=True, blank=True, related_name="users")
     year = models.IntegerField()
     profile_img_url = models.URLField(null=True, blank=True, default=None)
+    goal = models.TextField(null=True, blank=True)
+    share_profile = models.BooleanField(default=True)
+    
+class Skill(models.Model):
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='skills')
+    skill_name = models.TextField()
+    acquired = models.BooleanField() # if true current skill, if false, learning/new
+    
     
 class SocialLink(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="social_links")

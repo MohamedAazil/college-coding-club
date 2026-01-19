@@ -114,7 +114,7 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
       if (!httpResponse.ok) throw new Error("Something went wrong");
 
       const responseData = await httpResponse.json();
-      setUserProfile(responseData);
+      setUserProfile(responseData?.data);
     } catch (error) {
       console.error("Failed to fetch user details:", error);
     }

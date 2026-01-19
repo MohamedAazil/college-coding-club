@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import CommunityPostView, UserProfileDataView, PostReactionView
+from .views import CommunityPostView, PostReactionView, UserProfileDataView
 
 urlpatterns = [
     path('community-posts', CommunityPostView.as_view(), name='community-posts'),

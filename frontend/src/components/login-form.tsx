@@ -1,60 +1,40 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle
-} from "@/components/ui/card"
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Field,
   FieldDescription,
   FieldGroup,
-  FieldLabel
-} from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { useAppContext } from "@/context/Context"
-import { cn } from "@/lib/utils"
-import { useState } from "react"
+  FieldLabel,
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { useAppContext } from "@/context/Context";
+import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const { login } = useAppContext();
 
-  const {login} = useAppContext()
-  
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-
-    //   const login = async (email:string, password: string) => {
-    //     const response = await fetch(`${VITE_BACKEND_URL}/api/login`, {
-    //         method: 'POST',
-    //         headers: {
-    //             "Content-Type": "application/json",
-    //         },
-    //         body: JSON.stringify({
-    //             email: email,
-    //             password: password
-    //         })
-    //     })
-
-    //     if(!response.ok){
-    //         // navigate("/login")x
-    //         throw new Error("Login failed")
-    //     }
-    //     const jsonResponse = response.json()
-    //     console.log(jsonResponse)
-    // }
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   return (
-    <div className={cn("flex flex-col gap-6 mx-auto pt-32", className)} {...props}>
+    <div
+      className={cn("flex flex-col gap-6 mx-auto pt-32", className)}
+      {...props}
+    >
       <Card>
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Welcome back</CardTitle>
-          <CardDescription>
-            Login with your registered email
-          </CardDescription>
+          <CardDescription>Login with your registered email</CardDescription>
         </CardHeader>
         <CardContent>
           <form>
@@ -87,7 +67,7 @@ export function LoginForm({
                 <Input
                   id="email"
                   type="email"
-                  onChange={(e)=>setEmail(e.target.value)}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="email@example.com"
                   required
                 />
@@ -102,14 +82,23 @@ export function LoginForm({
                     Forgot your password?
                   </a>
                 </div>
-                <Input id="password" 
-                  onChange={(e)=>setPassword(e.target.value)}
-                  type="password" required />
+                <Input
+                  id="password"
+                  onChange={(e) => setPassword(e.target.value)}
+                  type="password"
+                  required
+                />
               </Field>
               <Field>
-                <Button onClick={(e)=> {
-                  e.preventDefault();
-                  login(email, password)}} type="submit">Login</Button>
+                <Button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    login(email, password);
+                  }}
+                  type="submit"
+                >
+                  Login
+                </Button>
                 <FieldDescription className="text-center">
                   Don&apos;t have an account? <a href="/signup">Sign up</a>
                 </FieldDescription>
@@ -123,5 +112,5 @@ export function LoginForm({
         and <a href="#">Privacy Policy</a>.
       </FieldDescription>
     </div>
-  )
+  );
 }
