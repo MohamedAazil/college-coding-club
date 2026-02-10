@@ -21,16 +21,19 @@ class CommunityPostSerializer(ModelSerializer):
         return obj.author.profile_img_url
     
     def get_is_liked_by_user(self, obj):
-        request = self.context.get("request")
-        if not request or not request.user.get('aud'):
+        try:
+            request = self.context.get("request")
+            if not (request and request.user.get('aud')):
+                return False
+            content_type = ContentType.objects.get_for_model(CommunityPost)
+            return Like.objects.filter(
+                user_id=request.user.get('sub'),
+                object_id=obj.id,
+                content_type=content_type,
+                reaction_type=Like.Like
+            ).exists()
+        except Exception as e:
             return False
-        content_type = ContentType.objects.get_for_model(CommunityPost)
-        return Like.objects.filter(
-            user_id=request.user.get('sub'),
-            object_id=obj.id,
-            content_type=content_type,
-            reaction_type=Like.Like
-        ).exists()
 
     def get_is_disliked_by_user(self, obj):
         request = self.context.get("request")
