@@ -1,5 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import AllBlogsComponent from "./components/AllBlogsComponent";
+import BlogView from "./components/BlogView";
 import CreateBlogComponent from "./components/CreateBlogComponent";
 import HomeComponent from "./components/HomeComponent";
 import { LoginForm } from "./components/login-form";
@@ -17,6 +18,7 @@ function App() {
           <Route path="blogs/my-blogs" element={<AllBlogsComponent />} />
           <Route path="blogs/new" element={<CreateBlogComponent />} />
           <Route path="settings/user" element={<UserProfileComponent />} />
+          <Route path="blogs/:post_id" element={<BlogView />} />
           {/* <Route index element={<BlogList/>}/> */}
         </Route>
       </Routes>

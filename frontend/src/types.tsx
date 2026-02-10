@@ -20,7 +20,7 @@ export interface UserProfile {
   age: number | null;
   college: string;
   year: number | null;
-  profileImgFile: string;
+  userImgUrl: string;
   goal: string;
   shareProfile: boolean;
   currentSkills: [];
@@ -41,3 +41,18 @@ export type ImageNode = {
   nodePath: number[];
   src: string;
 };
+
+interface BlogPost {
+  id: number; // DB id
+  post_id: string; // UUID (use this in URLs)
+  title: string;
+  content: string;
+  coverImg: string | null;
+  author_name: string;
+  author_avatar: string | null;
+  created_at: string;
+  like_count: number;
+  dislike_count: number;
+  is_liked_by_user: boolean;
+  is_disliked_by_user: boolean;
+}

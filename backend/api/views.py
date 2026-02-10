@@ -50,16 +50,15 @@ class UserProfileDataView(APIView):
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class CommunityPostView(APIView):
-    def get_single_post(self, request, user_id, post_id):
+    def get_single_post(self, request, post_id):
         try:
-            post_queryset = CommunityPost.objects.filter(id=post_id)
-            if not post_queryset.exists():
+            post = CommunityPost.objects.get(post_id=post_id)
+            if not post:
                 return Response({"message":"No data found"}, status=status.HTTP_404_NOT_FOUND)
-            post = post_queryset.first()
             serializer = CommunityPostSerializer(post, context={'request':request})
-            return Response({"data":serializer.data}, status=status.HTTP_200_OK)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
-            return Response({"error":e.info}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
     def get_posts_from_college(self, college_id):
         return True
@@ -69,7 +68,6 @@ class CommunityPostView(APIView):
         college_id = kwargs.get("college_id", None)
         author_id = request.query_params.get("author_id", None)
         pagination = kwargs.get("post_count", 25)
-        single_post = False
         if post_id:
             return self.get_single_post(post_id=post_id, request=request)
         try: 
